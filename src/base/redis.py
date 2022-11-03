@@ -1,6 +1,9 @@
 import aioredis
 
 
+from base.utils import Singleton
+
+
 class PoolUninitExcption(Exception):
     def __repr__(self) -> str:
         return "连接池未初始化"
@@ -50,13 +53,13 @@ class BaseRedisPool():
 
 REDIS_CONF = {
     'shard1':{
-        'host': "localhost",
+        'host': "127.0.0.1",
         'password': "redis123",
         'port': 6379,
     }
 }
 
-class RedisFakeCluster():
+class RedisFakeCluster(Singleton):
     def __init__(self) -> None:
         self.shards = []
         self.shard_num = 0
