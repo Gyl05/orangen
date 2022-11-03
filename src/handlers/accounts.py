@@ -25,3 +25,10 @@ class AccountsHandler(BaseRequestHandler):
         accountmodel = AccountModel()
         await accountmodel.create_user(username, password)  # TODO 新增用户接口的返回格式？
         self.write('create user ok.')
+
+
+class LoginHandler(BaseRequestHandler):
+
+    def post(self):
+        # 查表， 发token
+        self.write('登录成功')

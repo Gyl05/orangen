@@ -1,8 +1,21 @@
 from tornado.web import RequestHandler
 from base.mysql import BaseMysqlPool
+from models.account import AccountModel
 
 
 class BaseRequestHandler(RequestHandler):
+
+    def write_error(self, message, status_code):
+
+        self.set_status(status_code)
+
+        _json = {
+            "error": {
+                "status": status_code,
+                "details": [message]
+            }
+        }
+        self.write(_json)
 
     def __init__(self, application, request, **kwargs) -> None:
         super().__init__(application, request, **kwargs)
@@ -12,23 +25,24 @@ class BaseRequestHandler(RequestHandler):
         allow_without_token_apis = [
             '/api/login',  # 登录接口不需要token，其他都需要登录
         ]
+        token = self.request.headers.get('token', '')
+        print(token)
+        if not token and self.request.path not in allow_without_token_apis:
+            self.write_error(status_code=401, message="非法登录")
+            return self.finish()
 
-class BaseModel:
-    def __init__(self) -> None:
-        self.mysql_conn = None
+        if self.request.path not in allow_without_token_apis:
+            accountmodel = AccountModel()
+            error_code, token_info = accountmodel.parse_token(token)
+            if error_code or not token_info:
+                self.write_error(status_code=401, message="非法登录")
+                return self.finish()
 
-    async def get_mysql_client(self):
-        GlobalMysqlPool = BaseMysqlPool()
-        self.mysql_conn = await GlobalMysqlPool.get_mysql_client()
-        return self.mysql_conn
-    
-    async def execute_sql(self, sql):
-        mysql_client = await self.get_mysql_client()
-        async with mysql_client._conn.cursor() as cur:
-            desc = await cur.execute(sql)
-            queryset = await cur.fetchall()
-        return desc, queryset
-
+            if error_code is None and token_info:
+                user_checked, user_info = accountmodel.check_by_token_info(token_info)
+                if user_checked:
+                    self.user_info = user_info
+        
 
 async def redis_mysql_prepare():
     GlobalMysqlPool = BaseMysqlPool()
