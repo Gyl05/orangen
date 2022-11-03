@@ -1,5 +1,6 @@
 from tornado.web import RequestHandler
 from base.mysql import BaseMysqlPool
+from base.redis import RedisFakeCluster
 from models.account import AccountModel
 
 
@@ -43,7 +44,11 @@ class BaseRequestHandler(RequestHandler):
                 if user_checked:
                     self.user_info = user_info
         
+        
 
 async def redis_mysql_prepare():
     GlobalMysqlPool = BaseMysqlPool()
     await GlobalMysqlPool.initialize()
+
+    GlobalRedisFakeCluster = RedisFakeCluster()
+    GlobalRedisFakeCluster.initialize()

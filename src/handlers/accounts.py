@@ -30,5 +30,5 @@ class AccountsHandler(BaseRequestHandler):
 class LoginHandler(BaseRequestHandler):
 
     def post(self):
-        # 查表， 发token
+        # 查表， 发token  # TODO 接收参数，参数校验
         self.write('登录成功')

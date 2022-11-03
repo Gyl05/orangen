@@ -17,7 +17,6 @@ class AccountModel(BaseModel):
         print(msg, res)
         return res
 
-    
     async def create_user(self, username, password):
         now = time.strftime("%Y-%m-%d %H:%M:%S")
         sql = f"""INSERT INTO `user` 
