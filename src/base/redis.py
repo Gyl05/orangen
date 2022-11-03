@@ -40,7 +40,7 @@ class BaseRedisPool():
             'port': 6379,
         }
         conf.update(redis_conf)
-        self._pool = await aioredis.ConnectionPool(**conf)
+        self._pool = aioredis.ConnectionPool(**conf)
 
     async def get_connection(self):
         if not self._pool:
@@ -62,9 +62,10 @@ class RedisFakeCluster(Singleton):
         self.shards = []
         self.shard_num = 0
 
-    def initialize(self, conf):
-        for shard_name, conf in REDIS_CONF:
-            self.shards.append(BaseRedisPool(**conf))
+    async def initialize(self, redis_conf):
+        for shard_name in redis_conf:
+            conf = redis_conf[shard_name]
+            self.shards.append(await BaseRedisPool().init_pool(conf))
         self.shard_num =  len(self.shards)
         return self.shard_num
 

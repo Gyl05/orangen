@@ -29,6 +29,18 @@ class AccountsHandler(BaseRequestHandler):
 
 class LoginHandler(BaseRequestHandler):
 
-    def post(self):
-        # 查表， 发token  # TODO 接收参数，参数校验
-        self.write('登录成功')
+    async def post(self):
+        accountmodel = AccountModel()
+        username = self.get_argument('username')
+        password = self.get_argument('password')
+        account_ = await accountmodel.select_one(username)
+        if account_:
+            is_match = accountmodel.check_password(password, account_.get('password'))
+            print(is_match)
+            if is_match:
+                payload = {'username': account_.get('username'), 'exp':86400}
+                token = accountmodel.gen_token(payload)
+                self.write({"code": 200, "token": token})
+                # 查表， 发token  # TODO 接收参数，参数校验
+            else:
+                self.write_error(status_code=401, message="用户名或密码错误")
