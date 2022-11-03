@@ -4,32 +4,30 @@ import time
 import jwt
 from models import BaseModel 
 
-class AccountModel(BaseModel):
-    TOKEN_SECRET = 'SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
+SECRET_KEY = 'SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
 
+
+class AccountModel(BaseModel):
+    
     def gen_token(self, payload):
         headers = {
-            "alg": "HS256",
-            "typ": "JWT"
+        "alg": "HS256",
+        "typ": "JWT",
         }
-        token = jwt.encode(
-            payload=payload, 
-            key=self.TOKEN_SECRET, 
-            algorithm='HS256', 
-            headers=headers)
+        key = SECRET_KEY
+        token = jwt.encode(headers=headers, payload=payload, key=key)
+        print(type(token))
 
         return token
 
     def parse_token(self, token):
-        decoded, parsed_info = None, {}
+        res = {}
         try:
-            parsed_info = jwt.decode(token, self.TOKEN_SECRET, algorithm='HS256')
-        except:
-            decoded = 'jwt_decode_error'
-            raise jwt.DecodeError
+            res = jwt.decode(jwt=token, key=SECRET_KEY, algorithms='HS256')
+        except Exception as e:
+            print(e)
         finally:
-            print(decoded, parsed_info)
-            return decoded, parsed_info
+            return None, res
     
     async def check_by_token_info(self, token_info):
         # 查表判断 token_info携带的信息是否和表中用户匹配

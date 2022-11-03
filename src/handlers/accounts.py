@@ -20,7 +20,7 @@ class AccountsHandler(BaseRequestHandler):
         self.write(json_str)
     
     async def post(self):
-        username = 'kkktest'
+        username = 'kkktest2323'
         password = '334455'
         accountmodel = AccountModel()
         await accountmodel.create_user(username, password)  # TODO 新增用户接口的返回格式？
@@ -38,7 +38,8 @@ class LoginHandler(BaseRequestHandler):
             is_match = accountmodel.check_password(password, account_.get('password'))
             print(is_match)
             if is_match:
-                payload = {'username': account_.get('username'), 'exp':86400}
+                exp = int(time.time()) + 60
+                payload = {'username': account_.get('username'), 'exp':str(exp)}
                 token = accountmodel.gen_token(payload)
                 self.write({"code": 200, "token": token})
                 # 查表， 发token  # TODO 接收参数，参数校验

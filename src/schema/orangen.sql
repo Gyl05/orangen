@@ -12,3 +12,5 @@ CREATE TABLE `user` (
     PRIMARY KEY (`id`),
     UNIQUE KEY `username` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
+
+INSERT INTO `user` (username, password) values ('root', '123456');

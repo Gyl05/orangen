@@ -26,7 +26,7 @@ class BaseMysqlPool(Singleton):
 
     async def initialize(self):
         mysql_conf = {
-            "host": "127.0.0.1",
+            "host": "localhost",
             'user': "root",
             "password": "123456",
             "db": "orangen",
@@ -35,7 +35,6 @@ class BaseMysqlPool(Singleton):
             'echo': True,
             'cursorclass': aiomysql.cursors.DictCursor,
             'autocommit': True,
-            'charset': 'utf8mb4',
         }
         loop = asyncio.get_running_loop()
         self._pool = await aiomysql.create_pool(**mysql_conf, loop=loop)

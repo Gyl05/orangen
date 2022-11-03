@@ -27,7 +27,6 @@ class BaseRequestHandler(RequestHandler):
             '/api/login',  # 登录接口不需要token，其他都需要登录
         ]
         token = self.request.headers.get('token', '')
-        print('携带的token:', token)
         if not token and self.request.path not in allow_without_token_apis:
             self.write_error(status_code=401, message="未登录1")
             return self.finish()
