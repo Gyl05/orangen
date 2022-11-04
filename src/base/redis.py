@@ -16,8 +16,8 @@ class RedisClient:
     def __del__(self):
         self._conn = None
 
-    async def set(self, key, val):
-        return await self._conn.set(key, val)
+    async def set(self, key, val, ex=-1):
+        return await self._conn.set(key, val, ex=ex)
 
     async def get(self, key):
         return await self._conn.get(key)
@@ -65,7 +65,9 @@ class RedisFakeCluster(Singleton):
     async def initialize(self, redis_conf):
         for shard_name in redis_conf:
             conf = redis_conf[shard_name]
-            self.shards.append(await BaseRedisPool().init_pool(conf))
+            new_pool = BaseRedisPool()
+            await new_pool.init_pool(conf)
+            self.shards.append(new_pool)
         self.shard_num =  len(self.shards)
         return self.shard_num
 
@@ -77,8 +79,8 @@ class RedisFakeCluster(Singleton):
         dest_pool_id = hashsum % self.shard_num
         return dest_pool_id
 
-    def get_connection(self, token):
+    async def get_connection(self, token)->RedisClient:
         hash_id = self.select_slot(token)
         pool = self.shards[hash_id]
-        conn = pool.get_connection()
+        conn = await pool.get_connection()
         return conn
