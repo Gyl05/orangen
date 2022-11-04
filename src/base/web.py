@@ -1,3 +1,4 @@
+import json
 from tornado.web import RequestHandler
 from base.mysql import BaseMysqlPool
 from base.redis import REDIS_CONF, RedisFakeCluster
@@ -5,6 +6,10 @@ from models.account import AccountModel
 
 
 class BaseRequestHandler(RequestHandler):
+
+    @property
+    def content_type(self):
+        return self.request.headers.get('Content-Type')
 
     def write_error(self, message, status_code):
 
@@ -22,6 +27,15 @@ class BaseRequestHandler(RequestHandler):
         super().__init__(application, request, **kwargs)
     
     async def prepare(self):
+
+        content_type = self.content_type
+        if content_type is not None and 'application/json' in content_type and self.request.body:
+            try:
+                json_args = json.loads(self.request.body)
+                setattr(self.request, 'json_args', json_args)
+            except Exception:
+                print('bad application/json body', self.request.body)
+
         # check token
         allow_without_token_apis = [
             '/api/login',  # 登录接口不需要token，其他都需要登录

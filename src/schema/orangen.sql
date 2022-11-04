@@ -14,3 +14,14 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
 
 INSERT INTO `user` (username, password) values ('root', '123456');
+
+
+CREATE TABLE `sites` (
+    `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT '站点id',
+    `sitename` varchar(32) NOT NULL DEFAULT '' COMMENT '站点名称',
+    `uri` varchar(128) COMMENT '站点url',
+    `create_time` datetime NOT NULL DEFAULT '1970-01-01 00:00:00' COMMENT '创建时间',
+    `visit_num` int unsigned DEFAULT 0 COMMENT '访问次数',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `sitename` (`sitename`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='站点收藏表';
