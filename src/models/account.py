@@ -64,7 +64,6 @@ class AccountModel(BaseModel):
     async def get_all_user(self):
         sql = "SELECT id, username, create_time FROM `user`;"
         msg, res = await self.execute_sql(sql)
-        print(msg, res)
         return res
 
     async def create_user(self, username, password):

@@ -1,5 +1,6 @@
 import json
 import time
+from base.redis import RedisFakeCluster
 
 
 from base.web import BaseRequestHandler
@@ -16,8 +17,7 @@ class AccountsHandler(BaseRequestHandler):
             'code': 200,
             'content': users
         }
-        json_str = json.dumps(return_dict, ensure_ascii=False)
-        self.write(json_str)
+        self.write(return_dict)  # dict类型 tornado 自动转换json
     
     async def post(self):
         username = self.get_argument('username')
@@ -35,24 +35,38 @@ class LoginHandler(BaseRequestHandler):
 
     async def post(self):
         accountmodel = AccountModel()
-        username = self.get_argument('username')
-        password = self.get_argument('password')
-        account_ = await accountmodel.select_one(username)
-        if account_:
-            is_match = accountmodel.check_password(password, account_.get('password'))
-            print(is_match)
-            if is_match:
-                exp = int(time.time()) + 3600
-                username = account_.get('username')
-                payload = {'username': username, 'exp':str(exp)}
-                token = accountmodel.gen_token(payload)
-                await accountmodel.update_login_time(account_.get('id'))
-                self.write({"code": 200, "content":{"token": token, "username": username}})
-                # 查表， 发token  # TODO 接收参数，参数校验
+        # username = self.get_argument('username')
+        username = self.request.json_args['username']
+        # password = self.get_argument('password')
+        password = self.request.json_args['password']
+        vcode_version = self.request.json_args['vcode-version']
+        print(vcode_version)
+        vcode = self.request.json_args['vcode']
+        redis_client = await RedisFakeCluster().get_connection(vcode_version)
+        vcode_redis = await redis_client.get(vcode_version)
+        if vcode == vcode_redis.decode('utf-8'):
+            account_ = await accountmodel.select_one(username)
+            if account_:
+                is_match = accountmodel.check_password(password, account_.get('password'))
+                print(is_match)
+                if is_match:
+                    exp = int(time.time()) + 3600
+                    username = account_.get('username')
+                    payload = {'username': username, 'exp':str(exp)}
+                    token = accountmodel.gen_token(payload)
+                    await accountmodel.update_login_time(account_.get('id'))
+                    self.write({"code": 200, "content":{"token": token, "username": username}})
+                    # 查表， 发token  # TODO 接收参数，参数校验
+                else:
+                    self.write_error(status_code=401, message="用户名或密码错误")
             else:
-                self.write_error(status_code=401, message="用户名或密码错误")
+                    self.write_error(status_code=401, message="用户名或密码错误")
+        else:
+            self.write_error(status_code=401, message="验证码错误")
 
 class VerifyCodeHandler(BaseRequestHandler):
     async def get(self):
         accountmodel = AccountModel()
-        accountmodel.gen_identify_code()
+        scode_id, scode = await accountmodel.gen_identify_code(6)
+        content = {'version': scode_id, 'scode': scode}
+        self.write({'code':200, 'content': content})  # 把6位码返回

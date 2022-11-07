@@ -39,6 +39,7 @@ class BaseRequestHandler(RequestHandler):
         # check token
         allow_without_token_apis = [
             '/api/login',  # 登录接口不需要token，其他都需要登录
+            '/api/vcode',
         ]
         token = self.request.headers.get('token', '')
         if not token and self.request.path not in allow_without_token_apis:

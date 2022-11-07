@@ -14,3 +14,9 @@ class WebSiteHandler(BaseRequestHandler):
         sitemodel = WebsiteModel()
         msg, res = await sitemodel.get_all_site()
         self.write({'code': 200, 'content': res})
+    
+    async def delete(self):
+        sitemodel = WebsiteModel()
+        ids:list = self.get_arguments('id')
+        delete_ids = await sitemodel.delete_by_id(*ids)
+        self.write({'code': 204, 'content': delete_ids})
