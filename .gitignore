@@ -1,3 +1,10 @@
 .env
 .vscode
 *.pyc
+*__pychache__*
+
+# c files
+*.c
+
+# compiled bytes
+*.out
