@@ -5,6 +5,7 @@
 
 # c files
 *.c
+clib/*
 
 # compiled bytes
 *.out
