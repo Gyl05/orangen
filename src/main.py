@@ -1,5 +1,5 @@
 import asyncio
-import tornado.web
+import tornado.web, tornado.options
 
 
 from api.route import routers
@@ -13,6 +13,9 @@ def make_app():
 
 async def main():
     await redis_mysql_prepare()
+    tornado.options.options.logging = "info"
+    tornado.options.parse_command_line()
+
     app = make_app()
     app.listen(8000)
     await asyncio.Event().wait()

@@ -3,6 +3,7 @@ import asyncio
 
 
 from base.utils import Singleton
+from config import MYSQL_CONF
 
 class MysqlClient:
     def __init__(self, conn, pool) -> None:
@@ -24,18 +25,15 @@ class BaseMysqlPool(Singleton):
     def __init__(self) -> None:
         self._pool = None
 
-    async def initialize(self):
+    async def initialize(self, MYSQL_CONF):
         mysql_conf = {
-            "host": "localhost",
-            'user': "root",
-            "password": "123456",
-            "db": "orangen",
             'minsize': 2,
             'maxsize': 4,
             'echo': True,
             'cursorclass': aiomysql.cursors.DictCursor,
             'autocommit': True,
         }
+        mysql_conf.update(MYSQL_CONF)
         loop = asyncio.get_running_loop()
         self._pool = await aiomysql.create_pool(**mysql_conf, loop=loop)
     

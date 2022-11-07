@@ -1,9 +1,13 @@
 import json
+import os
 from tornado.web import RequestHandler
 from base.mysql import BaseMysqlPool
-from base.redis import REDIS_CONF, RedisFakeCluster
+from base.redis import RedisFakeCluster
+
 from models.account import AccountModel
 
+class LoggerMixin:
+    pass
 
 class BaseRequestHandler(RequestHandler):
 
@@ -58,11 +62,19 @@ class BaseRequestHandler(RequestHandler):
                 if user_checked:
                     self.user_info = user_info
         
-        
+
+LOCAL_DEBUG = os.getenv('LOCAL_DEBUG')
+print(LOCAL_DEBUG, type(LOCAL_DEBUG))
+if LOCAL_DEBUG == 'LOCAL':
+    from config.local_config import MYSQL_CONF
+    from config.local_config import REDIS_CONF
+else:
+    from config import MYSQL_CONF
+    from config import REDIS_CONF
 
 async def redis_mysql_prepare():
     GlobalMysqlPool = BaseMysqlPool()
-    await GlobalMysqlPool.initialize()
+    await GlobalMysqlPool.initialize(MYSQL_CONF)
 
     GlobalRedisFakeCluster = RedisFakeCluster()
     shard_num = await GlobalRedisFakeCluster.initialize(REDIS_CONF)

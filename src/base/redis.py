@@ -49,14 +49,6 @@ class BaseRedisPool():
         return RedisClient(conn)
 
 
-REDIS_CONF = {
-    'shard1':{
-        'host': "127.0.0.1",
-        'password': "redis123",
-        'port': 6379,
-    }
-}
-
 class RedisFakeCluster(Singleton):
     def __init__(self) -> None:
         self.shards = []
