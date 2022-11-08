@@ -69,8 +69,8 @@ if LOCAL_DEBUG == 'LOCAL':
     from config.local_config import MYSQL_CONF
     from config.local_config import REDIS_CONF
 else:
-    from config import MYSQL_CONF
-    from config import REDIS_CONF
+    from config.build_config import MYSQL_CONF
+    from config.build_config import REDIS_CONF
 
 async def redis_mysql_prepare():
     GlobalMysqlPool = BaseMysqlPool()
