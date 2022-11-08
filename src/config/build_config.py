@@ -9,17 +9,17 @@ MYSQL_CONF = {
 
 REDIS_CONF = {
     'shard1':{
-        'host': "orange-redis0.orange-redis",
+        'host': "orangen-redis-sts-0.orangen-redis",
         'password': "redis123",
         'port': 6379,
     },
     'shard2':{
-        'host': "orange-redis1.orange-redis",
+        'host': "orangen-redis-sts-1.orangen-redis",
         'password': "redis123",
         'port': 6379,
     },
     'shard3':{
-        'host': "orange-redis2.orange-redis",
+        'host': "orangen-redis-sts-2.orangen-redis",
         'password': "redis123",
         'port': 6379,
     }
