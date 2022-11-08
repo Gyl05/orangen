@@ -1,5 +1,6 @@
 
 import json
+import os
 
 
 MYSQL_CONF_TEMP = {
@@ -28,8 +29,8 @@ REDIS_CONF_TEMP = {
     }
 }
 
-
-runtime_config_path = 'src/run_time_config/app-config.json'
+src_path = os.path.dirname(os.path.dirname(__file__))
+runtime_config_path = os.path.join(src_path,'run_time_config/app-config.json')
 
 with open(runtime_config_path, 'r') as config:
     real_config = json.loads(config.read())
