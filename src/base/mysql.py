@@ -3,7 +3,6 @@ import asyncio
 
 
 from base.utils import Singleton
-from config import MYSQL_CONF
 
 class MysqlClient:
     def __init__(self, conn, pool) -> None:
