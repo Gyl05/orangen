@@ -1,0 +1,4 @@
+{
+    "path": "http://www.baidu.com",
+    "filetype": "image"
+}

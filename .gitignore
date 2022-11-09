@@ -9,3 +9,6 @@ clib/*
 
 # compiled bytes
 *.out
+# tmpfile
+*/*/tmpfiledir
+*/tmpfiledir
