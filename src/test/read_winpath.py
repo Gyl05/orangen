@@ -7,5 +7,6 @@ import json
 
 with open('src/test/b.json', 'r') as fc:
     json_obj = json.loads(fc.read())
-    print(json_obj['path'])
+    path = json_obj['path']
+    print(path)
     

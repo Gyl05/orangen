@@ -3,9 +3,6 @@ from base.web import RequestHandler
 
 
 class FileHandler(RequestHandler):
-    async def get(self):
-        self.write({'code': 200, 'msg': '下载文件'})
-    
     async def post(self):
         if self.request.files:
             for filename, real_name_body in self.request.files.items():
