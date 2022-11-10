@@ -1,5 +1,6 @@
 import json
 import os
+from typing import Dict, List
 from tornado.web import RequestHandler
 from base.mysql import BaseMysqlPool
 from base.redis import RedisFakeCluster
@@ -44,7 +45,8 @@ class BaseRequestHandler(RequestHandler):
         allow_without_token_apis = [
             '/api/login',  # 登录接口不需要token，其他都需要登录
             '/api/vcode',
-            '/api/hello'
+            '/api/hello',
+            '/api/stored-sites'
         ]
         token = self.request.headers.get('token', '')
         if not token and self.request.path not in allow_without_token_apis:
@@ -80,3 +82,41 @@ async def redis_mysql_prepare():
     GlobalRedisFakeCluster = RedisFakeCluster()
     shard_num = await GlobalRedisFakeCluster.initialize(REDIS_CONF)
     print("RedisFakeCluster initializing...", shard_num)
+
+
+class Param:  # HTTP传递的参数 query body
+    def __init__(self, required, name, label, type, default=None, description=None) -> None:
+        self.required = required  # 是否必须
+        self.name = name  # 参数名称
+        self.description = description  # 描述
+        self.label = label
+        self.type = type
+        self.default = default
+    
+    def check(self, val):  # 检查参数类型
+        pass
+
+class API:  # 生成api接口文档
+    def __init__(self, apiname, params, return_msg) -> None:
+        self.name = apiname
+        self.params = params
+        self.return_msg = return_msg
+
+    def parse_request_params(self):
+        param_error_info = {}
+        for param in self.params:
+            check_info = param.check('1')
+            if not check_info:
+                param_error_info[param.name] = check_info
+        if param_error_info:
+            pass
+
+def define_api(name: str, params: List[Param], return_msg: Dict):
+    # 返回一个装饰器
+    def wrapper(async_func):  # 返回一个improved 协程
+        async def wrapped_func(request, *args, **kwargs):
+            api = API(name, params, return_msg)
+            api.parse_request_params()
+            await async_func(request, *args, **kwargs)
+        return wrapped_func
+    return wrapper

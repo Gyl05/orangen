@@ -1,8 +1,16 @@
-from base.web import BaseRequestHandler
+from base.web import BaseRequestHandler, Param, define_api
 from models.site import WebsiteModel
 
 class WebSiteHandler(BaseRequestHandler):
 
+    @define_api(
+        name="新增站点",
+        params=[
+            Param(name="sitename", required=True, type=str, label="站点名称"),
+            Param(name="uri", required=True, type=str, label="地址")
+        ],
+        return_msg={'code': 201, 'content': "xxx"}
+    )
     async def post(self):
         sitename = self.request.json_args.get("sitename")
         uri = self.request.json_args.get("uri")
