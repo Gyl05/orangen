@@ -31,6 +31,16 @@ class BaseRequestHandler(RequestHandler):
     def __init__(self, application, request, **kwargs) -> None:
         super().__init__(application, request, **kwargs)
     
+    def get_argument(self, name, default=None):
+        try:
+            arg = super().get_argument(name)
+        except Exception:
+            if hasattr(self.request, 'json_args'):
+                arg = self.request.json_args.get(name, default)
+            else:
+                arg = default
+        return arg
+    
     async def prepare(self):
 
         content_type = self.content_type
@@ -46,7 +56,8 @@ class BaseRequestHandler(RequestHandler):
             '/api/login',  # 登录接口不需要token，其他都需要登录
             '/api/vcode',
             '/api/hello',
-            '/api/stored-sites'
+            '/api/stored-sites',
+            '/api/show_params'
         ]
         token = self.request.headers.get('token', '')
         if not token and self.request.path not in allow_without_token_apis:
@@ -85,7 +96,7 @@ async def redis_mysql_prepare():
 
 
 class Param:  # HTTP传递的参数 query body
-    def __init__(self, required, name, label, type, default=None, description=None) -> None:
+    def __init__(self, name, type, label, required=False, default=None, description=None) -> None:
         self.required = required  # 是否必须
         self.name = name  # 参数名称
         self.description = description  # 描述
@@ -94,7 +105,18 @@ class Param:  # HTTP传递的参数 query body
         self.default = default
     
     def check(self, val):  # 检查参数类型
-        pass
+        # 能此处，参数一定在要求列表中
+        if isinstance(val, str):
+            if self.type is int:
+                return int(val)
+            elif self.type is float:
+                return float(val)
+            elif self.type is bool:
+                return val.upper() == 'TRUE'
+        elif isinstance(val, dict):
+            return json.loads(val)
+        else:
+            return val
 
 class API:  # 生成api接口文档
     def __init__(self, apiname, params, return_msg) -> None:
@@ -102,21 +124,25 @@ class API:  # 生成api接口文档
         self.params = params
         self.return_msg = return_msg
 
-    def parse_request_params(self):
-        param_error_info = {}
-        for param in self.params:
-            check_info = param.check('1')
-            if not check_info:
-                param_error_info[param.name] = check_info
-        if param_error_info:
-            pass
+    def parse_request_params(self, request):
+        parserd_params = {}
+        try:
+            for param in self.params:
+                param_in_request = request.get_argument(param.name, None)
+                parsed = param.check(param_in_request)
+                parserd_params[param.name] = parsed
+            request.params = parserd_params
+        except Exception as e:
+            return '参数错误'
 
 def define_api(name: str, params: List[Param], return_msg: Dict):
     # 返回一个装饰器
     def wrapper(async_func):  # 返回一个improved 协程
-        async def wrapped_func(request, *args, **kwargs):
+        async def wrapped_func(requesthandler: RequestHandler, *args, **kwargs):
             api = API(name, params, return_msg)
-            api.parse_request_params()
-            await async_func(request, *args, **kwargs)
+            error_msg = api.parse_request_params(requesthandler)
+            if error_msg:
+                return requesthandler.write_error({'code': 500, 'msg': '参数错误'})
+            await async_func(requesthandler, *args, **kwargs)
         return wrapped_func
     return wrapper

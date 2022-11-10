@@ -3,7 +3,7 @@ import time
 from base.redis import RedisFakeCluster
 
 
-from base.web import BaseRequestHandler
+from base.web import BaseRequestHandler, Param, define_api
 from models.account import AccountModel
 
 class AccountsHandler(BaseRequestHandler):
@@ -18,7 +18,18 @@ class AccountsHandler(BaseRequestHandler):
             'content': users
         }
         self.write(return_dict)  # dict类型 tornado 自动转换json
-    
+        
+    @define_api(
+        name="新建账号",
+        params=[
+            Param('username', str, '账号'),
+            Param('password', str, '密码')
+        ],
+        return_msg={
+            "code": 200,
+            "msg": "xxx"
+        }
+    )
     async def post(self):
         username = self.get_argument('username')
         password = self.get_argument('password')
