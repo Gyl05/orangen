@@ -50,7 +50,7 @@ class LoginHandler(BaseRequestHandler):
                 is_match = accountmodel.check_password(password, account_.get('password'))
                 print(is_match)
                 if is_match:
-                    exp = int(time.time()) + 3600
+                    exp = int(time.time()) + 3600 * 8  # 登陆一次 token 有效期8h
                     username = account_.get('username')
                     payload = {'username': username, 'exp':str(exp)}
                     token = accountmodel.gen_token(payload)

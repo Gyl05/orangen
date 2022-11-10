@@ -12,3 +12,6 @@ clib/*
 # tmpfile
 */*/tmpfiledir
 */tmpfiledir
+
+# doc
+doc
