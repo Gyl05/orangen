@@ -11,4 +11,4 @@ typedef struct treenode{
 
 void printNode(treeNode* root);
 
-void buildTree(treeNode*, TYPE *elems[]);
+void addChildren(treeNode* root, TYPE lv, TYPE rv);
