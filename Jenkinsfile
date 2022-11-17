@@ -22,6 +22,8 @@ pipeline{
             steps{
                 sh """
                     echo '部署镜像 docker-compose or k8s.'
+                    podman pull registry.cn-hongkong.aliyuncs.com/fruitbucket/orangen:latest
+                    podman run -it --rm --name test-jenkins -p0.0.0.0:80:80 registry.cn-hongkong.aliyuncs.com/fruitbucket/orangen:latest
                 """
             }
         }
