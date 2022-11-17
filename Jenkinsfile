@@ -16,8 +16,13 @@ pipeline{
             }
         }
         stage('deployment'){
+            when{
+                    changeset 'html/*'
+            }
             steps{
-                echo 'deploy image on slave agent.'
+                sh """
+                    echo '部署镜像 docker-compose or k8s.'
+                """
             }
         }
     }
