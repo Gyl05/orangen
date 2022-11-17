@@ -2,6 +2,9 @@ pipeline{
     agent any
     stages{
         stage('Build-image'){
+            when{
+                changeset 'html/*'
+            }
             steps{
                 withCredentials([usernamePassword(credentialsId: 'jenkins-to-Aliyun-dockerhub', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]){
                     sh """
@@ -11,6 +14,9 @@ pipeline{
                     """
                 }
             }
+        }
+        stage('deployment'){
+            echo 'deploy image on slave agent.'
         }
     }
 }
