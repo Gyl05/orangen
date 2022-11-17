@@ -9,6 +9,8 @@ typedef struct hashTable
 
 void hashTableInit(hashTable* h);
 
-int insert(hashTable* h);
+int insert(hashTable* h, int num);
 
-int hashFunc(int num);
+int hashFunc(int num, hashTable* h);
+
+void printHashTable(hashTable* h);

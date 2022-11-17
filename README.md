@@ -23,3 +23,6 @@ token 通过请求体返回，登录时的vcode-version也通过请求体发送
 测试jenkins
 add sth and push, 触发webhook jenkins build
 .... 触发 观察freestyle和pipeline的区别
+
+11.17
+部署阶段 podman run image 方式阻塞
