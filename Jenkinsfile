@@ -16,7 +16,9 @@ pipeline{
             }
         }
         stage('deployment'){
-            echo 'deploy image on slave agent.'
+            steps{
+                echo 'deploy image on slave agent.'
+            }
         }
     }
 }
