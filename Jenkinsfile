@@ -1,7 +1,5 @@
 pipeline{
-    agent {
-        label 'orangen-slave'
-    }
+    agent any
     stages{
         stage('Build-image'){
             when{
@@ -15,23 +13,6 @@ pipeline{
                         docker push registry.cn-hongkong.aliyuncs.com/fruitbucket/orangen:latest
                     """
                 }
-            }
-        }
-        stage('deployment'){
-            when{
-                anyOf {
-                    changeset 'html/*'
-                    changeset 'Jenkinsfile'
-                } 
-            }
-            steps{
-                sh """
-                    echo '部署镜像 docker-compose or k8s.'
-                    pwd
-                    whoami
-                    docker pull registry.cn-hongkong.aliyuncs.com/fruitbucket/orangen:latest
-                    docker run -it --rm -p0.0.0.0:80:80 registry.cn-hongkong.aliyuncs.com/fruitbucket/orangen:latest
-                """
             }
         }
     }
