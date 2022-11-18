@@ -8,9 +8,9 @@ pipeline{
             steps{
                 withCredentials([usernamePassword(credentialsId: 'jenkins-to-Aliyun-dockerhub', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]){
                     sh """
-                        docker build -t registry.cn-hongkong.aliyuncs.com/fruitbucket/orangen:latest -f dockerfile1 .
+                        podman build -t registry.cn-hongkong.aliyuncs.com/fruitbucket/orangen:latest -f dockerfile1 .
                         echo ${DOCKER_PASSWORD} | podman login --username=gyl2021 --password-stdin registry.cn-hongkong.aliyuncs.com
-                        docker push registry.cn-hongkong.aliyuncs.com/fruitbucket/orangen:latest
+                        podman push registry.cn-hongkong.aliyuncs.com/fruitbucket/orangen:latest
                     """
                 }
             }
