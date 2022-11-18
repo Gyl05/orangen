@@ -3,7 +3,10 @@ pipeline{
     stages{
         stage('Build-image'){
             when{
-                changeset 'html/*'
+                anyOf {
+                    changeset 'html/*'
+                    changeset 'Jenkinsfile'
+                }
             }
             steps{
                 withCredentials([usernamePassword(credentialsId: 'jenkins-to-Aliyun-dockerhub', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]){
