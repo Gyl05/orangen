@@ -1,5 +1,7 @@
 pipeline{
-    agent any
+    agent {
+        label 'local'
+    }
     stages{
         stage('Build-image'){
             when{
