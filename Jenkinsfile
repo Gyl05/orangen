@@ -17,8 +17,10 @@ pipeline{
         }
         stage('deployment'){
             when{
+                anyOf {
                     changeset 'html/*'
                     changeset 'Jenkinsfile'
+                } 
             }
             steps{
                 sh """
