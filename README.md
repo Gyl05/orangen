@@ -18,3 +18,11 @@
 token 通过请求体返回，登录时的vcode-version也通过请求体发送
 应该考虑转移到请求头上
 基本实现了 账户和 收藏链接的crud 以及用户登录接口
+
+11.16
+测试jenkins
+add sth and push, 触发webhook jenkins build
+.... 触发 观察freestyle和pipeline的区别
+
+11.17
+部署阶段 podman run image 方式阻塞
