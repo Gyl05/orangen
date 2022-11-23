@@ -1,4 +1,3 @@
-import copy
 from functools import wraps
 
 
@@ -13,13 +12,10 @@ def print_before_get(cls):
                 return result
 
             setattr(cls, func, wrapper)
-        elif func.startswith('get'):
-            setattr(cls, func, '666')
     return cls
 
 @print_before_get
 class A:
-
     def get_1(self):
         return 1
 
